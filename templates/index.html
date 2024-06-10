@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高校就職応援サイト!!</title>
+</head>
+<body>
+    <h1>動画を再生</h1>
+    <form id="downloadForm">
+        <label for="url">YouTubeの動画URLをお願いします。:</label>
+        <input type="text" id="url" name="url" required>
+        <button type="submit">ダウンロード</button>
+    </form>
+    <div id="videoContainer" style="display:none;">
+        <h2>success!! 動作してくれてうれしいよ...</h2>
+        <video width="600" controls id="downloadedVideo">
+            <source id="videoSource" type="video/mp4">
+            どうやらvideoタグをサポートしていないようです
+        </video>
+    </div>
+
+    <script>
+        document.getElementById('downloadForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const url = document.getElementById('url').value;
+
+            const response = await fetch('/download', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ url: url })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const videoContainer = document.getElementById('videoContainer');
+                const videoSource = document.getElementById('videoSource');
+                videoSource.src = data.video_url;
+                videoContainer.style.display = 'block';
+                document.getElementById('downloadedVideo').load();
+            } else {
+                alert('失敗した(´;ω;｀)');
+            }
+        });
+    </script>
+</body>
+</html>
